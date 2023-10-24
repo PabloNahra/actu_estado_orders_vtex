@@ -12,7 +12,6 @@ def log_grabar(texto, dir_log):
     archivo = open(dir_log, 'a')
     archivo.write(log)
     archivo.close()
-
     return 0
 
 def recuperar_facturas(sql_instancia, sql_db, sql_user, sql_pass):

@@ -45,4 +45,5 @@ VTEX_Orders_Table = json_data['Objetos_SQL']['VTEX_Orders_Table'] #'tblVTEX_Orde
 # VTEX_Orders_Table = 'tblVTEX_Orders_Facturas_API_Log_Carmin' # Carmin Store
 
 # parametros de funcionamiento
+
 dias_facturacion = json_data['generales']['dias_facturacion']
