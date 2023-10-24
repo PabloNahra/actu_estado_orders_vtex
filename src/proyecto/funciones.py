@@ -141,7 +141,11 @@ def vtex_api_get_order_valores(order_id, api_key, api_token, vtex_account_name, 
 
 	# grabar log capturando respuestas del servicio
 	resultado = response.json()
-	order_valores = {'orderId': resultado['orderId'], 'status': resultado['status'], 'value': resultado['value']}
+	# order_valores = {'orderId': resultado['orderId'], 'status': resultado['status'], 'value': resultado['value']}
+	if 'error' not in resultado:
+		order_valores = {'orderId': str(order_id), 'status': resultado['status'], 'value': resultado['value']}
+	else:
+		order_valores = {'orderId': str(order_id)}
 
 	return order_valores
 
@@ -194,7 +198,8 @@ def vtex_api_actualizar_estado_orders_facturado(order_facturadas, api_key, api_t
 	for order in order_facturadas:
 
 		# primero pasamos la order a preparando ('handling')
-		vtex_api_actualizar_estado_order_preparando(order['Order_id'], api_key, api_token, vtex_account_name, vtex_enviroment)
+		vtex_api_actualizar_estado_order_preparando(order['Order_id'],
+		                                            api_key, api_token, vtex_account_name, vtex_enviroment)
 
 		# url de api vtex
 		# ejemplo: url = "https://stylewatch.vtexcommercestable.com.br/api/oms/pvt/orders/1275291282121-01/invoice"
@@ -220,7 +225,6 @@ def vtex_api_actualizar_estado_orders_facturado(order_facturadas, api_key, api_t
 		}
 
 		response = requests.post(url, json=payload, headers=headers)
-
 
 		# grabar log capturando respuestas del servicio
 		resultado = response.json()
@@ -277,8 +281,5 @@ def tabla_log_resultado(sql_instancia, sql_db, sql_user, sql_pass, order_id, lei
 	# Cierro conexión
 	consulta.close()
 	conexion.close()
-
-
-
 
 	return 0
