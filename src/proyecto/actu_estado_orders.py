@@ -40,5 +40,6 @@ except PermissionError as e:
 	funciones.log_grabar('ERROR - Termino programa: Error de acceso a directorio', config.dir_log)
 	if hasattr(e, 'message'):
 		funciones.log_grabar(f'ERROR - Termino programa - Message: {e.message}', config.dir_log)
+
 finally:
 	funciones.log_grabar('Prog - actualizar estado de order - Fin', config.dir_log)

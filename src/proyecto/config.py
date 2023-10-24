@@ -43,5 +43,6 @@ excel_directorio_procesado = json_data['Parametros_Excel']['excel_directorio_pro
 # defino la tabla de log
 VTEX_Orders_Table = json_data['Objetos_SQL']['VTEX_Orders_Table'] #'tblVTEX_Orders_Facturas_API_Log_Style' # StyleStore
 # VTEX_Orders_Table = 'tblVTEX_Orders_Facturas_API_Log_Carmin' # Carmin Store
+
 # parametros de funcionamiento
 dias_facturacion = json_data['generales']['dias_facturacion']
