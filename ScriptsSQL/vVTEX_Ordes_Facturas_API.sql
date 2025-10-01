@@ -14,7 +14,7 @@ GO
 
 
 
-ALTER view [dbo].[vVTEX_Ordes_Facturas_API] as
+--ALTER view [dbo].[vVTEX_Ordes_Facturas_API] as
 /*
 
 -- =============================================

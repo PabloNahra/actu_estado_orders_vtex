@@ -71,6 +71,52 @@ def tabla_log_put_vtas(sql_instancia, sql_db, sql_user, sql_pass, nuevas_fc):
 
 	for comprobante in nuevas_fc:
 
+		# Convertir la fecha al formato SQL Server
+		if isinstance(comprobante['Fecha_Emision_FC'], str):
+			# Si es string, asumir que ya está en formato correcto o convertirlo
+			Fecha_Emision_FC_formateada = comprobante['Fecha_Emision_FC']
+		else:
+			# Si es datetime object
+			Fecha_Emision_FC_formateada = comprobante['Fecha_Emision_FC'].strftime('%Y-%m-%d %H:%M:%S')
+
+		sql = (f"INSERT INTO {config.VTEX_Orders_Table_Log} " \
+		      "(empresa_id, "
+		       "fc_id, Fecha_Emision_FC, " \
+		      "Order_id, Invoice_id, " \
+		      "Invoice_Value, " \
+		      "Fecha_Informado, Leido) " \
+		      "VALUES " \
+		      f"('{comprobante['empresa_id']}', '{comprobante['fc_id']}', "
+		       f"'{Fecha_Emision_FC_formateada}', " \
+		      f"'{comprobante['Order_id']}', "
+		       f"'{comprobante['Invoice_id']}'," \
+		      f"{comprobante['Invoice_Value']}," \
+		      f"getdate(), 0)"
+		       )
+
+		consulta.execute(sql)
+		conexion.commit()
+
+	# Cierro conexión
+	consulta.close()
+	conexion.close()
+
+	return 0
+
+
+def tabla_log_put_vtas_OLD(sql_instancia, sql_db, sql_user, sql_pass, nuevas_fc):
+	'''
+	A partir de una lista de diccionarios con los datos de los comprobantes facturados
+	grabar las mismas realizando un insert en una tabla de datos SQL
+	'''
+	# Conecto con SQL
+	conexion = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server};'
+	                          'SERVER=' + sql_instancia + ';DATABASE=' + sql_db + ';UID=' + sql_user + ';PWD=' + sql_pass)
+
+	consulta = conexion.cursor()
+
+	for comprobante in nuevas_fc:
+
 		sql = f"INSERT INTO {config.VTEX_Orders_Table} " \
 		      "(cve_id, Fecha_Emision_FC, " \
 		      "Order_id, Invoice_id, " \
@@ -104,7 +150,7 @@ def comprob_a_impactar(sql_instancia, sql_db, sql_user, sql_pass):
 	nuevos_comprobantes = []
 
 	sql = "SELECT Order_id, Invoice_Id, Fecha_Emision_FC, ROUND(Invoice_Value, 2) AS Invoice_Value " \
-	      f"FROM {config.VTEX_Orders_Table} " \
+	      f"FROM {config.VTEX_Orders_Table_Log} " \
 	      "WHERE " \
 	      "leido = 0"
 
