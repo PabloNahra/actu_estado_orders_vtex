@@ -3,7 +3,8 @@ import pyodbc
 import config
 import datetime
 import requests
-
+import smtplib
+from email.message import EmailMessage
 
 # Inserto registro de proceso actualizado
 def log_grabar(texto, dir_log):
@@ -93,7 +94,7 @@ def recuperar_parametro(sql_instancia, sql_db, sql_user, sql_pass, param_key: st
 
 		# Consulta del parámetro
 		cursor.execute(
-			f"SELECT Param_Value FROM {config.tblParametros} WHERE Param_Key = ?",
+			f"SELECT Param_Value FROM {config.parametros} WHERE Param_Key = ?",
 			(param_key,)
 		)
 		row = cursor.fetchone()
@@ -418,3 +419,52 @@ def tabla_log_resultado(sql_instancia, sql_db, sql_user, sql_pass, order_id, lei
 	conexion.close()
 
 	return 0
+
+
+def envio_mail(mail_from, mail_to, mail_subject, mail_attachment, mail_content):
+	"""
+	Envio de mail con o sin adjunto
+	:return:
+	"""
+	# crear un objeto de tipo mensaje de email
+	message = EmailMessage()
+
+	# Configurar cabecera del mail
+	message['Subject'] = mail_subject
+	message['From'] = mail_from
+	message['To'] = mail_to
+
+	# configurar cuerpo del mensaje
+	message.set_content(mail_content)
+
+	# tomar el archivo adjunto
+	if mail_attachment and len(mail_attachment) > 0:
+		with open(f"{mail_attachment}", "rb") as f:
+			message.add_attachment(
+				f.read(),
+				filename=f"{mail_attachment}",
+				maintype="application",
+				subtype="vnd.ms-excel"
+			)
+
+	# configurar smtp server y port
+	email_smtp = config.email_smtp
+	server = smtplib.SMTP(email_smtp, config.email_port)
+
+	# Identify this client to the SMTP server
+	server.ehlo()
+
+	# Secure the SMTP connection
+	server.starttls()
+
+	# loguearse en el mail
+	sender_email_address = config.sender_email_address # "noreply@satrendy.net"
+	email_password = config.email_password # "Swatch2021%"
+	server.login(sender_email_address, email_password)
+
+	# Send email
+	server.send_message(message)
+	# Close connection to server
+	server.quit()
+
+	return

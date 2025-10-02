@@ -30,6 +30,18 @@ parametros = json_data['Objetos_SQL']['parametros']
 ## defino la tabla de log
 VTEX_Orders_Table_Log = json_data['Objetos_SQL']['VTEX_Orders_Table_Log']
 
+# Configuracion de envio de mails
+email_smtp = json_data['envio_mail']['email_smtp']
+email_port = json_data['envio_mail']['email_port']
+sender_email_address = json_data['envio_mail']['sender_email_address']
+email_password = json_data['envio_mail']['email_password']
+mail_from = json_data['envio_mail']['mail_from']
+mail_to = json_data['envio_mail']['mail_to']
+mail_subject_inconvenientes = json_data['envio_mail']['mail_subject_inconvenientes']
+mail_exitoso_envia = json_data['envio_mail']['mail_exitoso_envia']
+mail_subject_exitoso = json_data['envio_mail']['mail_subject_exitoso']
+
+
 
 # parametros de funcionamiento
 dias_facturacion = json_data['generales']['dias_facturacion']
