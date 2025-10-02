@@ -93,7 +93,7 @@ def recuperar_parametro(sql_instancia, sql_db, sql_user, sql_pass, param_key: st
 
 		# Consulta del parámetro
 		cursor.execute(
-			"SELECT Param_Value FROM tblParametros WHERE Param_Key = ?",
+			f"SELECT Param_Value FROM {config.tblParametros} WHERE Param_Key = ?",
 			(param_key,)
 		)
 		row = cursor.fetchone()
@@ -331,21 +331,6 @@ def vtex_api_actualizar_estado_orders_facturado(order_facturadas,
 	            "trackingNumber": None,
 	            "trackingUrl": None
             }
-            '''
-            payload = {
-                # el valor a informar es con dos decimales pero no debe incluir ningun separador de decimales
-                # "invoiceValue": f"{str(order['Invoice_Value']).replace('.','')}",
-                "invoiceValue": f"{valores_order['value']}",
-                "dispatchedDate": None,
-                "type": "Output",
-                "issuanceDate": f"{order['Fecha_Emision_FC']}",
-                # "issuanceDate": "2022-11-10T07:25:43-05:00",
-                "invoiceNumber": f"{order['Invoice_Id']}",
-                "invoiceKey": None,
-                "courier": None,
-                "trackingNumber": None,
-                "trackingUrl": None
-            }'''
 
             response = requests.post(url, json=payload, headers=headers)
 
@@ -395,75 +380,6 @@ def vtex_api_actualizar_estado_orders_facturado(order_facturadas,
             continue  # Continuar con la siguiente orden
 
     return 0
-def vtex_api_actualizar_estado_orders_facturado_OLD(order_facturadas,
-                                                api_key, api_token,
-                                                vtex_account_name, vtex_enviroment):
-	'''
-	Desde una lista con las ordenes que se facturaron impactar en el ambiente de vtex
-	para pasar el pedido a estado facturado
-
-	Utilizamos este servicio API según nos recomendó M3
-	https://developers.vtex.com/vtex-rest-api/reference/invoicenotification
-	:param order_facturadas:
-	:return:
-	'''
-
-	# Datos generales del header
-	headers = {
-		"Accept": "application/json",
-		"Content-Type": "application/json",
-		"X-VTEX-API-AppKey": api_key,
-		"X-VTEX-API-AppToken": api_token
-	}
-
-	for order in order_facturadas:
-
-		# primero pasamos la order a preparando ('handling')
-		vtex_api_actualizar_estado_order_preparando(order['Order_id'],
-		                                            api_key, api_token,
-		                                            vtex_account_name, vtex_enviroment)
-
-		# url de api vtex
-		# ejemplo: url = "https://stylewatch.vtexcommercestable.com.br/api/oms/pvt/orders/1275291282121-01/invoice"
-		url = f"https://{vtex_account_name}.{vtex_enviroment}.com.br/api/oms/pvt/orders/{order['Order_id']}/invoice"
-
-		# consulto el valor de la Order (definición de ECO que es el valor a informar) - 2022-11-11
-		valores_order = vtex_api_get_order_valores(order['Order_id'], api_key, api_token, vtex_account_name, vtex_enviroment)
-
-		# configuro el json para Api vtex
-		payload = {
-			# el valor a informar es con dos decimales pero no debe incluir ningun separador de decimales
-			# "invoiceValue": f"{str(order['Invoice_Value']).replace('.','')}",
-			"invoiceValue": f"{valores_order['value']}",
-			"dispatchedDate": None,
-			"type": "Output",
-			"issuanceDate": f"{order['Fecha_Emision_FC']}",
-			# "issuanceDate": "2022-11-10T07:25:43-05:00",
-			"invoiceNumber": f"{order['Invoice_Id']}",
-			"invoiceKey": None,
-			"courier": None,
-			"trackingNumber": None,
-			"trackingUrl": None
-		}
-
-		response = requests.post(url, json=payload, headers=headers)
-
-		# grabar log capturando respuestas del servicio
-		resultado = response.json()
-		rta = response.status_code
-		if rta == 200:
-			tabla_log_resultado(config.sql_instancia_sb, config.sql_db_sb,
-			                    config.sql_user_sb, config.sql_pass_sb,
-			                    order['Order_id'], 1, 'Exitoso')
-		else:
-			tabla_log_resultado(config.sql_instancia_sb, config.sql_db_sb,
-			                    config.sql_user_sb, config.sql_pass_sb,
-			                    order['Order_id'], 2, f"Inconveniente al actualizar - {rta} "
-			                                          f"- {resultado['error']['message']}")
-
-	return 0
-
-
 
 def tabla_log_resultado(sql_instancia, sql_db, sql_user, sql_pass, order_id, leido_id, leido_log):
 	'''

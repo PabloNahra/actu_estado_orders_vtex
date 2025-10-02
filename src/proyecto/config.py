@@ -21,10 +21,12 @@ sql_pass_int = json_data['cred_SQL_Integracion']['sql_pass_int']
 # Objetos SQL
 ## defino la tabla de entornos
 entornos = json_data['Objetos_SQL']['entornos']
+## defino la tabla de parametros
+parametros = json_data['Objetos_SQL']['parametros']
 ## Defino la vista de donde tomamos las facturas que faltan impactar desde Bejerman
-VTEX_Order_Pend_v = json_data['Objetos_SQL']['VTEX_Order_Pend_v'] # StyleStore
+##VTEX_Order_Pend_v = json_data['Objetos_SQL']['VTEX_Order_Pend_v'] # StyleStore
 ## Defino la vista de donde tomamos las facturas que faltan impactar desde Dragon
-VTEX_Order_Pend_v_Dragon = json_data['Objetos_SQL']['VTEX_Order_Pend_v_Dragon']
+##VTEX_Order_Pend_v_Dragon = json_data['Objetos_SQL']['VTEX_Order_Pend_v_Dragon']
 ## defino la tabla de log
 VTEX_Orders_Table_Log = json_data['Objetos_SQL']['VTEX_Orders_Table_Log']
 
